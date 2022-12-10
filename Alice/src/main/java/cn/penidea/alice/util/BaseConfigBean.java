@@ -26,5 +26,5 @@ public class BaseConfigBean {
     private String promptUpWord;
     private String standbyPrompt;
     private String loadingWord;
-    private boolean isPublic;
+    public String isPublic;
 }
