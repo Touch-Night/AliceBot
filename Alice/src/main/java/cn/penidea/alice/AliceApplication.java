@@ -37,7 +37,7 @@ public class AliceApplication {
     @Value("${clientBaseConfig.loadingWord}")
     private String loadingWord;
     @Value("${clientBaseConfig.isPublic}")
-    private boolean isPublic;
+    private String isPublic;
     @Value("${chatGPT.email}")
     private String email;
     @Value("${chatGPT.password}")
@@ -67,7 +67,7 @@ public class AliceApplication {
             promptUpWord = props.getStr("promptUpWord");
             standbyPrompt = props.getStr("standbyPrompt");
             loadingWord = props.getStr("loadingWord");
-            isPublic = props.getBool("isPublic");
+            isPublic = props.getStr("isPublic");
         }
         userList.put(adminQQ, "");
         userList.put("admin", adminQQ);
