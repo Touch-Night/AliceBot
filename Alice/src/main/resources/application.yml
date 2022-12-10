@@ -5,13 +5,13 @@ isFile: true
 clientBaseConfig:
   admin: 10001
   robot: 10002
-  wakeUpWord: Hi Alice
-  standbyWord: Nothing,thanks
-  promptUpWord: Hi master,what i to do?
-  robotName: Alice
-  standbyPrompt: You welcome
-  loadingWord: 正在检索...
-  isPublic: true
+  wakeUpWord: 酷霸王出来一下
+  standbyWord: 行了滚吧
+  promptUpWord: 找老子有什么事？
+  robotName: 酷霸王
+  standbyPrompt: 下次嘴巴给我放干净点！
+  loadingWord: 等一下昂
+  isPublic: pubvate
 
 # chatGPT配置
 chatGPT:
