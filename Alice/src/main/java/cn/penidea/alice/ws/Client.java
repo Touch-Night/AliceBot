@@ -134,9 +134,9 @@ public class Client {
         String msg = message.getMessage(); //消息内容
         String from = message.getUser_id();//发送方qq
         String groupId = message.getGroup_id();//群聊号
-        if (baseConfigBean.getUserList().get(from) != null || baseConfigBean.isPublic()) {
-            if (msg.contains(baseConfigBean.getAtRobotCQ() + " Say hello")) {
-                sendMessage(from, groupId, messageType, "大家好!我是" + baseConfigBean.getRobotName(), false);
+        if (baseConfigBean.getUserList().get(from) != null || baseConfigBean.isPublic == "true") {
+            if (msg.contains(baseConfigBean.getAtRobotCQ() + " 问个好")) {
+                sendMessage(from, groupId, messageType, "你以为你是谁，随随便便就想让我给大家问好？", false);
                 return;
             } else if (MASTER == null || baseConfigBean.getUserList().get("admin").equals(from)) {
                 if ((msg.equals(baseConfigBean.getWakeUpWord()) || msg.startsWith(baseConfigBean.getAtRobotCQ()))) {
@@ -144,66 +144,81 @@ public class Client {
                     if (msg.equals(baseConfigBean.getAtRobotCQ()) || msg.equals(baseConfigBean.getAtRobotCQ() + " ") || msg.equals(baseConfigBean.getWakeUpWord())) {
                         sendMessage(from, groupId, messageType, baseConfigBean.getPromptUpWord(), false);
                     }
-                } else if (msg.equals(baseConfigBean.getStandbyWord())) {
-                    MASTER = null;
-                    sendMessage(from, groupId, messageType, baseConfigBean.getStandbyPrompt(), false);
                 }
             }
-
-            if (MASTER != null && from.equals(MASTER)) {
-                if (msg.startsWith(baseConfigBean.getAtRobotCQ()) && !msg.equals(baseConfigBean.getAtRobotCQ()) && !msg.equals(baseConfigBean.getAtRobotCQ() + " ")) {
-                    if (msg.equals(baseConfigBean.getAtRobotCQ() + " ")) {
-                        msg = msg.substring(msg.indexOf("]") + 3);
-                    } else {
-                        msg = msg.substring(msg.indexOf("]") + 2);
+            
+            if (MASTER != null){
+            	if (from.equals(MASTER)) {
+            		if (msg.startsWith(baseConfigBean.getAtRobotCQ()) && !msg.equals(baseConfigBean.getAtRobotCQ()) && !msg.equals(baseConfigBean.getAtRobotCQ() + " ")) {
+            			if (msg.equals(baseConfigBean.getAtRobotCQ() + " ")) {
+            				msg = msg.substring(msg.indexOf("]") + 3);
+            			} else {
+            				msg = msg.substring(msg.indexOf("]") + 2);
+            			}
+            		}
+            		if (msg.equals(baseConfigBean.getStandbyWord())) {
+                        MASTER = null;
+                        sendMessage(from, groupId, messageType, baseConfigBean.getStandbyPrompt(), false);
                     }
-                }
-                if (baseConfigBean.getUserList().get("admin").equals(from)) {
-                    if (msg.startsWith("add [CQ:at,qq=")) {
-                        String qq = msg.substring(msg.indexOf("add [CQ:at,qq=") + 14, msg.indexOf("]"));
-                        baseConfigBean.getUserList().put(qq, "");
-                        sendMessage(from, groupId, messageType, "添加主人" + qq + "成功!", false);
-                        MASTER = null;
-                        return;
-                    } else if (msg.startsWith("del [CQ:at,qq=")) {
-                        String qq = msg.substring(msg.indexOf("del [CQ:at,qq=") + 14, msg.indexOf("]"));
-                        if (baseConfigBean.getUserList().get(qq) != null) {
-                            baseConfigBean.getUserList().remove(qq);
-                            sendMessage(from, groupId, messageType, "移除主人" + qq + "成功!", false);
-                        } else {
-                            sendMessage(from, groupId, messageType, "移除失败，主人列表里并没有他", false);
-                        }
-                        MASTER = null;
-                        return;
-                    } else if (msg.equals("#public")) {
-                        baseConfigBean.setPublic(true);
-                        sendMessage(from, groupId, messageType, "机器人已设为公有化", false);
-                        MASTER = null;
-                        return;
-                    } else if (msg.equals("#private")) {
-                        baseConfigBean.setPublic(false);
-                        sendMessage(from, groupId, messageType, "机器人已设为私有化", false);
-                        MASTER = null;
-                        return;
-                    } else if (msg.equals("#reset chat")) {
-                        chatGPTService.reset();
-                        sendMessage(from, groupId, messageType, "会话已重置", false);
-                        MASTER = null;
-                        return;
-                    }
-                }
-                try {
-                    if (!msg.equals(baseConfigBean.getAtRobotCQ()) && !msg.equals(baseConfigBean.getAtRobotCQ() + " ") && !msg.equals(baseConfigBean.getWakeUpWord())) {
-                        sendMessage(from, groupId, messageType, baseConfigBean.getLoadingWord(), false);
-                        String answer = chatGPTService.askQuestion(msg);
-                        answer = answer.replace("Assistant", baseConfigBean.getRobotName());
-                        sendMessage(from, groupId, messageType, answer, false);
-                        MASTER = null;
-                    }
-                } catch (Exception e) {
-                    chatGPTService.refresh();
-                }
+            		if (baseConfigBean.getUserList().get("admin").equals(from)) {
+            			if (msg.startsWith("add [CQ:at,qq=")) {
+            				String qq = msg.substring(msg.indexOf("也和这位聊吧[CQ:at,qq=") + 16, msg.indexOf("]"));
+            				baseConfigBean.getUserList().put(qq, "");
+            				sendMessage(from, groupId, messageType, "要让我和" + qq + "聊啊，行吧！", false);
+            				return;
+            			} else if (msg.startsWith("别理[CQ:at,qq=")) {
+            				String qq = msg.substring(msg.indexOf("别理[CQ:at,qq=") + 12, msg.indexOf("]"));
+            				if (baseConfigBean.getUserList().get(qq) != null) {
+            					baseConfigBean.getUserList().remove(qq);
+            					sendMessage(from, groupId, messageType, "好吧，那我再也不理" + qq + "了", false);
+            				} else {
+            					sendMessage(from, groupId, messageType, "哼哼，我早就不理他了", false);
+            				}
+            				return;
+            			} else if (msg.equals("#设为公有")) {
+            				baseConfigBean.isPublic = "true";
+            				sendMessage(from, groupId, messageType, "想让我和大家都聊天？好吧...", false);
+            				return;
+            			} else if (msg.equals("#设为私有")) {
+            				baseConfigBean.isPublic = "false";
+            				sendMessage(from, groupId, messageType, "哼哼，我现在只和我认识的人聊天了", false);
+            				return;
+            			} else if (msg.equals("#设为半公有")) {
+            				baseConfigBean.isPublic = "pubvate";
+            				sendMessage(from, groupId, messageType, "想和我聊天，求我啊？", false);
+            				return;
+            			} else if (msg.equals("#重置会话")) {
+            				chatGPTService.reset();
+            				sendMessage(from, groupId, messageType, "啊啊啊，我聊天的记忆，正在消失...", false);
+            				sendMessage(from, groupId, messageType, baseConfigBean.getPromptUpWord(), false);
+            				return;
+            			}
+            		}
+            		try {
+            			if (!msg.equals(baseConfigBean.getAtRobotCQ()) && !msg.equals(baseConfigBean.getAtRobotCQ() + " ") && !msg.equals(baseConfigBean.getWakeUpWord())) {
+            				sendMessage(from, groupId, messageType, baseConfigBean.getLoadingWord(), false);
+            				String answer = chatGPTService.askQuestion(msg);
+            				answer = answer.replace("Assistant", baseConfigBean.getRobotName());
+            				sendMessage(from, groupId, messageType, answer, false);
+            				MASTER = null;
+            			}
+            		} catch (Exception e) {
+            			chatGPTService.refresh();
+            			}
+            	} else {
+            		if ((msg.equals(baseConfigBean.getWakeUpWord()) || msg.startsWith(baseConfigBean.getAtRobotCQ()))) {
+                		sendMessage(from, groupId, messageType, "别吵吵，我还在和" + MASTER + "聊天呢，等下哈", false);
+                	}
+                  }
             }
+        } else if (msg.contains(baseConfigBean.getAtRobotCQ() + " 也和我聊聊呗") && baseConfigBean.isPublic == "pubvate"){
+        	baseConfigBean.getUserList().put(from, "");
+        	if (from.equals(MASTER)) {
+            sendMessage(from, groupId, messageType, "行行行，我也可以和你聊天", false);
+        	} else {
+        		sendMessage(from, groupId, messageType, "行，等我和" + MASTER + "聊完再跟你聊天", false);
+        	}
+            return;
         }
     }
 }
