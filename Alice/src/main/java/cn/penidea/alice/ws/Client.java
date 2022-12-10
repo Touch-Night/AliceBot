@@ -161,7 +161,7 @@ public class Client {
                         sendMessage(from, groupId, messageType, baseConfigBean.getStandbyPrompt(), false);
                     }
             		if (baseConfigBean.getUserList().get("admin").equals(from)) {
-            			if (msg.startsWith("add [CQ:at,qq=")) {
+            			if (msg.startsWith("也和这位聊吧[CQ:at,qq=")) {
             				String qq = msg.substring(msg.indexOf("也和这位聊吧[CQ:at,qq=") + 16, msg.indexOf("]"));
             				baseConfigBean.getUserList().put(qq, "");
             				sendMessage(from, groupId, messageType, "要让我和" + qq + "聊啊，行吧！", false);
